@@ -38,7 +38,7 @@ class TaskAdapter(
         }
 
         with(tileTaskView.tag as TileTaskViewHolder){
-            textViewName.text = task.name
+            textViewName.text = task.title
         }
 
         return tileTaskView

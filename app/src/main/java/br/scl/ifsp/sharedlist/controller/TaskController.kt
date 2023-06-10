@@ -9,6 +9,7 @@ class TaskController() {
     private val taskDaoImpl: TaskDao = TaskDaoRtDbFb()
 
     fun insert(task: Task, callback: (tasks: MutableList<Task>) -> Unit) {
+
         Thread {
             taskDaoImpl.create(task)
             callback(taskDaoImpl.all())

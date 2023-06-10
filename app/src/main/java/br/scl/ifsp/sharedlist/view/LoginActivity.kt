@@ -1,6 +1,7 @@
 package br.scl.ifsp.sharedlist.view
 
 import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -30,10 +31,35 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val username = binding.username
-        val password = binding.password
-        val login = binding.login
-        val loading = binding.loading
+        val editTextEmail = binding.editTextEmail
+        val editTextPassword = binding.editTextPassword
+        val buttonLogin = binding.buttonLogin
+        val buttonRegister = binding.buttonRegister
+
+        buttonRegister.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        buttonLogin.setOnClickListener {
+            val authInstance = FirebaseAuth.getInstance();
+            val emailText = editTextEmail.text.toString()
+            val passwordText = editTextPassword.text.toString()
+
+            if (emailText.isEmpty() || passwordText.isEmpty()) return@setOnClickListener;
+
+            authInstance
+                .signInWithEmailAndPassword(emailText, passwordText)
+                .addOnSuccessListener {
+                    Toast.makeText(
+                        this,
+                        "Usuário $emailText autenticado com sucesso!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }.addOnFailureListener {
+                    Toast.makeText(this, "Falha na autenticação do usuário!", Toast.LENGTH_LONG)
+                        .show()
+                }
+        }
 
         auth = Firebase.auth
     }
@@ -43,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
 
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            Toast.makeText(this, "hello!", 1000).show();
+            Toast.makeText(this, "hello!", Toast.LENGTH_SHORT).show();
             Log.d("asd", "walter")
         }
     }
