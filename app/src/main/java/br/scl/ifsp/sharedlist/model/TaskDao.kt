@@ -3,18 +3,12 @@ package br.scl.ifsp.sharedlist.model
 import androidx.room.*
 
 interface TaskDao {
-    @Insert
-    fun create(contact: Task)
+    fun create(task: Task)
 
-    @Query("SELECT * FROM Task WHERE id = :id")
     fun retrieve(id: Int): Task?
 
-    @Query("SELECT * FROM Task")
-    fun all(): MutableList<Task>
+    fun all()
+    fun update(task: Task): Int
 
-    @Update
-    fun update(contact: Task): Int
-
-    @Delete
-    fun delete(contact: Task): Int
+    fun delete(task: Task): Int
 }
