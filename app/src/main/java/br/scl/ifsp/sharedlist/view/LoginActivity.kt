@@ -56,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
         val editTextPassword = binding.editTextPassword
         val buttonLogin = binding.buttonLogin
         val buttonRegister = binding.buttonRegister
+        val buttonForgotPassword = binding.buttonForgotPassword
         val signInGoogleButton = binding.signInButtonGoogle
 
         googleActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
@@ -67,6 +68,8 @@ class LoginActivity : AppCompatActivity() {
 
                 FirebaseAuth.getInstance().signInWithCredential(credential).addOnSuccessListener {
                     Toast.makeText(this, "Usuário ${googleSignInAccount.email} autenticado com sucesso!", Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this, TasksActivity::class.java))
+                    finish()
                 }.addOnFailureListener {
                     Toast.makeText(this, "Falha na autenticação de usuário!", Toast.LENGTH_LONG).show()
                 }
@@ -75,6 +78,10 @@ class LoginActivity : AppCompatActivity() {
 
         buttonRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        buttonForgotPassword.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
         buttonLogin.setOnClickListener {
@@ -101,13 +108,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         signInGoogleButton.setOnClickListener {
-            val gsa: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
-            if (gsa == null){
-                //Solicitar login com conta Google
-                googleActivityResultLauncher.launch(googleSignInClient.signInIntent)
-            }else{
-                startActivity(Intent(this, TasksActivity::class.java))
-            }
+            googleActivityResultLauncher.launch(googleSignInClient.signInIntent)
         }
 
         auth = Firebase.auth

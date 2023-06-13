@@ -44,6 +44,8 @@ class TaskUpdateActivity : AppCompatActivity() {
         task.let {
             activityTaskUpdateActivity.editTextTaskTitle.setText(it?.title)
             activityTaskUpdateActivity.editTextTaskDescription.setText(it?.description)
+            activityTaskUpdateActivity.editTextDateCreation.setText(it?.dateCreation.toString())
+            activityTaskUpdateActivity.editTextUser.setText(auth.currentUser?.email)
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -94,7 +96,8 @@ class TaskUpdateActivity : AppCompatActivity() {
                     title = activityTaskUpdateActivity.editTextTaskTitle.text.toString(),
                     description = activityTaskUpdateActivity.editTextTaskDescription.text.toString(),
                     dateEstimated = selectedDate,
-                    userUid = task?.userUid!!,
+                    dateCreation = task?.dateCreation!!,
+                    userUid = task.userUid,
                     finished = true
                 )
             ) {
@@ -106,6 +109,7 @@ class TaskUpdateActivity : AppCompatActivity() {
         val isEnabled = task?.userUid == auth.uid && !task?.finished!!
 
         activityTaskUpdateActivity.buttonSave.isEnabled = isEnabled
+        activityTaskUpdateActivity.editTextTaskDescription.isEnabled = isEnabled
         activityTaskUpdateActivity.buttonFinish.isEnabled = isEnabled
         activityTaskUpdateActivity.buttonDatePickerEstimated.isEnabled = isEnabled
     }

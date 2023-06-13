@@ -18,8 +18,9 @@ class RegisterActivity: AppCompatActivity() {
         activityRegisterBinding.buttonRegister.setOnClickListener {
             val email = activityRegisterBinding.editTextEmail.text.toString()
             val password = activityRegisterBinding.editTextPassword.text.toString()
+            val passwordConfirm = activityRegisterBinding.editTextConfirmPassword.text.toString()
 
-            //if (password.equals(password2)) {
+            if (password.equals(passwordConfirm)) {
 
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
@@ -36,14 +37,14 @@ class RegisterActivity: AppCompatActivity() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-//            } else {
-//                //Senhas não batem
-//                Toast.makeText(
-//                    this@CreateAccountActivity,
-//                    "Senhas não coincidem!",
-//                    Toast.LENGTH_LONG
-//                ).show()
-//            }
+            } else {
+                //Senhas não batem
+                Toast.makeText(
+                    this@RegisterActivity,
+                    "Senhas não coincidem!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 }

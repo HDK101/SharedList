@@ -52,7 +52,6 @@ class TasksActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         taskRealtimeDatabase.addObserver {
-            Log.d("TASK", it.toString())
             updateTasks(it)
         }
 
@@ -117,12 +116,14 @@ class TasksActivity : AppCompatActivity() {
         }
         if (item.itemId == 2) {
             val task = tasks[position]
-            if (auth.uid == task.userUid) {
+            if (auth.uid == task.userUid && !task.finished) {
                 taskRealtimeDatabase.delete(tasks[position]) {
                     Toast.makeText(this, "Tarefa deletada!", Toast.LENGTH_LONG).show()
                 }
-            } else {
+            } else if (auth.uid != task.userUid) {
                 Toast.makeText(this, "Você não é o criador dessa tarefa", Toast.LENGTH_LONG).show()
+            } else if (task.finished) {
+                Toast.makeText(this, "Essa tarefa já está finalizada, não pode ser deletada", Toast.LENGTH_LONG).show()
             }
         }
         return true

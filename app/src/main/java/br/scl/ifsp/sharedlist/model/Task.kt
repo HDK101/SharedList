@@ -13,6 +13,7 @@ data class Task(
     @PrimaryKey var id: String? = "",
     @NonNull var title: String = "",
     @NonNull var description: String = "",
+    @NonNull var dateCreation: Date = Date(),
     @NonNull var dateEstimated: Date = Date(),
     @NonNull var finished: Boolean = false,
     @NonNull var userUid: String = "",
