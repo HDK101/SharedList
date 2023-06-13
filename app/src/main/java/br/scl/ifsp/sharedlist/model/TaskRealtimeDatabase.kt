@@ -47,12 +47,18 @@ class TaskRealtimeDatabase {
         }
     }
 
-    fun update(task: Task) {
-        task.id?.let { taskRtDbFbReference.child(it).setValue(task) }
+    fun update(task: Task, callback: () -> Unit) {
+        task.id?.let {
+            taskRtDbFbReference.child(it).setValue(task).addOnSuccessListener {
+                callback()
+            }
+        }
     }
 
-    fun delete(task: Task) {
-        task.id?.let { taskRtDbFbReference.child(it).setValue(null) }
+    fun delete(task: Task, callback: () -> Unit) {
+        task.id?.let { taskRtDbFbReference.child(it).setValue(null).addOnSuccessListener {
+            callback()
+        } }
     }
 
     fun addObserver(callback: (MutableList<Task>) -> Unit) {

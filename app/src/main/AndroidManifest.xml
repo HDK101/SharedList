@@ -33,6 +33,10 @@
             android:name=".view.TaskCreateActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".view.TaskUpdateActivity"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

@@ -20,6 +20,7 @@ class RegisterActivity: AppCompatActivity() {
             val password = activityRegisterBinding.editTextPassword.text.toString()
 
             //if (password.equals(password2)) {
+
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
                         Toast.makeText(

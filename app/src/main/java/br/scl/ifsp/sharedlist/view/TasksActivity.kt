@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +21,8 @@ import br.scl.ifsp.sharedlist.databinding.ActivityTasksBinding
 import br.scl.ifsp.sharedlist.model.Task
 import br.scl.ifsp.sharedlist.model.TaskRealtimeDatabase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.time.LocalDate
 import java.util.Date
 
@@ -29,6 +32,7 @@ class TasksActivity : AppCompatActivity() {
             layoutInflater
         )
     }
+    private lateinit var auth: FirebaseAuth
 
     private val taskRealtimeDatabase = TaskRealtimeDatabase()
 
@@ -43,22 +47,29 @@ class TasksActivity : AppCompatActivity() {
 
         setContentView(activityTaskBinding.root)
 
+        registerForContextMenu(activityTaskBinding.listViewTasks)
+
+        auth = Firebase.auth
+
         taskRealtimeDatabase.addObserver {
             Log.d("TASK", it.toString())
             updateTasks(it)
         }
 
-        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
+        activityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
 
+                }
             }
-        }
 
         activityTaskBinding.listViewTasks.adapter = taskAdapter
 
         activityTaskBinding.listViewTasks.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, p3 ->
-
+                val intentUpdate = Intent(this, TaskUpdateActivity::class.java)
+                intentUpdate.putExtra("TASK", tasks[position])
+                activityResultLauncher.launch(intentUpdate)
             }
 
         //updateTasks(tasks)
@@ -69,19 +80,52 @@ class TasksActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean{
-        return when(item.itemId){
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.addTask -> {
                 activityResultLauncher.launch(Intent(this, TaskCreateActivity::class.java))
                 true
             }
             R.id.exit -> {
+                auth.signOut()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
                 true
             }
             else -> false
         }
+    }
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu?,
+        v: View?,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+
+        menu?.add(Menu.NONE, 1, Menu.NONE, "Atualizar")
+        menu?.add(Menu.NONE, 2, Menu.NONE, "Deletar")
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        super.onContextItemSelected(item)
+        val position = (item.menuInfo as AdapterView.AdapterContextMenuInfo).position
+        if (item.itemId == 1) {
+            val intentUpdate = Intent(this, TaskUpdateActivity::class.java)
+            intentUpdate.putExtra("TASK", tasks[position])
+            activityResultLauncher.launch(intentUpdate)
+        }
+        if (item.itemId == 2) {
+            val task = tasks[position]
+            if (auth.uid == task.userUid) {
+                taskRealtimeDatabase.delete(tasks[position]) {
+                    Toast.makeText(this, "Tarefa deletada!", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                Toast.makeText(this, "Você não é o criador dessa tarefa", Toast.LENGTH_LONG).show()
+            }
+        }
+        return true
     }
 
     fun updateTasks(_tasks: MutableList<Task>) {

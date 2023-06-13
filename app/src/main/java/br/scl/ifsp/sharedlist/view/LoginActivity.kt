@@ -14,17 +14,37 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import br.scl.ifsp.sharedlist.databinding.ActivityLoginBinding
 
 import br.scl.ifsp.sharedlist.R
 import br.scl.ifsp.sharedlist.model.Task
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityLoginBinding
+
+    private lateinit var googleActivityResultLauncher : ActivityResultLauncher<Intent>
+
+    protected val googleSignInOptions: GoogleSignInOptions by lazy {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+    }
+
+    protected val googleSignInClient: GoogleSignInClient by lazy{
+        GoogleSignIn.getClient(this, googleSignInOptions)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,16 +56,28 @@ class LoginActivity : AppCompatActivity() {
         val editTextPassword = binding.editTextPassword
         val buttonLogin = binding.buttonLogin
         val buttonRegister = binding.buttonRegister
+        val signInGoogleButton = binding.signInButtonGoogle
+
+        googleActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if (result.resultCode == RESULT_OK){
+                //Pegando retorno do login com conta google
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val googleSignInAccount: GoogleSignInAccount = task.result
+                val credential = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
+
+                FirebaseAuth.getInstance().signInWithCredential(credential).addOnSuccessListener {
+                    Toast.makeText(this, "Usuário ${googleSignInAccount.email} autenticado com sucesso!", Toast.LENGTH_LONG).show()
+                }.addOnFailureListener {
+                    Toast.makeText(this, "Falha na autenticação de usuário!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
 
         buttonRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
         buttonLogin.setOnClickListener {
-            startActivity(Intent(this, TasksActivity::class.java))
-            finish()
-
-            return@setOnClickListener
 
             val authInstance = FirebaseAuth.getInstance();
             val emailText = editTextEmail.text.toString()
@@ -56,6 +88,7 @@ class LoginActivity : AppCompatActivity() {
             authInstance
                 .signInWithEmailAndPassword(emailText, passwordText)
                 .addOnSuccessListener {
+                    startActivity(Intent(this, TasksActivity::class.java))
                     Toast.makeText(
                         this,
                         "Usuário $emailText autenticado com sucesso!",
@@ -67,6 +100,16 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
 
+        signInGoogleButton.setOnClickListener {
+            val gsa: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+            if (gsa == null){
+                //Solicitar login com conta Google
+                googleActivityResultLauncher.launch(googleSignInClient.signInIntent)
+            }else{
+                startActivity(Intent(this, TasksActivity::class.java))
+            }
+        }
+
         auth = Firebase.auth
     }
 
@@ -74,9 +117,8 @@ class LoginActivity : AppCompatActivity() {
         super.onStart()
 
         val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "hello!", Toast.LENGTH_SHORT).show();
-            Log.d("asd", "walter")
+        if (currentUser != null) {
+            startActivity(Intent(this, TasksActivity::class.java))
         }
     }
 }
