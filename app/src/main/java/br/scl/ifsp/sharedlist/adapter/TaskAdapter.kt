@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import br.scl.ifsp.sharedlist.R
 import br.scl.ifsp.sharedlist.databinding.TileTaskBinding
@@ -32,6 +33,7 @@ class TaskAdapter(
 
             val tileTaskViewHolder = TileTaskViewHolder(
                 tileTaskBinding.textViewName,
+                tileTaskBinding.imageViewDone
             )
 
             tileTaskView.tag = tileTaskViewHolder
@@ -39,6 +41,7 @@ class TaskAdapter(
 
         with(tileTaskView.tag as TileTaskViewHolder){
             textViewName.text = task.title
+            imageViewDone.visibility = if (task.finished) View.VISIBLE else View.INVISIBLE
         }
 
         return tileTaskView
@@ -46,5 +49,6 @@ class TaskAdapter(
 
     private data class TileTaskViewHolder(
         val textViewName: TextView,
+        val imageViewDone: ImageView
     )
 }
