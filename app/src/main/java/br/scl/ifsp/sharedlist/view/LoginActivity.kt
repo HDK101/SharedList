@@ -1,25 +1,16 @@
 package br.scl.ifsp.sharedlist.view
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import br.scl.ifsp.sharedlist.databinding.ActivityLoginBinding
 
 import br.scl.ifsp.sharedlist.R
-import br.scl.ifsp.sharedlist.model.Task
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -30,6 +21,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
+    companion object {
+        val LOGGED_WITH_EMAIL_PREFERENCE = "LOGGED_WITH_EMAIL_PREFERENCE"
+        val EMAIL_EXTRA = "EMAIL_EXTRA"
+    }
+
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityLoginBinding
 
@@ -52,12 +48,26 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+
         val editTextEmail = binding.editTextEmail
         val editTextPassword = binding.editTextPassword
         val buttonLogin = binding.buttonLogin
         val buttonRegister = binding.buttonRegister
         val buttonForgotPassword = binding.buttonForgotPassword
         val signInGoogleButton = binding.signInButtonGoogle
+
+        val logoutEmail = intent.getStringExtra(EMAIL_EXTRA) ?: ""
+
+        Log.d("LOGGED", sharedPref.getBoolean(LOGGED_WITH_EMAIL_PREFERENCE, false).toString())
+
+        if (sharedPref.getBoolean(LOGGED_WITH_EMAIL_PREFERENCE, false)) {
+            editTextEmail.setText(logoutEmail)
+            with (sharedPref.edit()) {
+                putBoolean(LOGGED_WITH_EMAIL_PREFERENCE, false)
+                apply()
+            }
+        }
 
         googleActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
             if (result.resultCode == RESULT_OK){
@@ -69,7 +79,6 @@ class LoginActivity : AppCompatActivity() {
                 FirebaseAuth.getInstance().signInWithCredential(credential).addOnSuccessListener {
                     Toast.makeText(this, "Usuário ${googleSignInAccount.email} autenticado com sucesso!", Toast.LENGTH_LONG).show()
                     startActivity(Intent(this, TasksActivity::class.java))
-                    finish()
                 }.addOnFailureListener {
                     Toast.makeText(this, "Falha na autenticação de usuário!", Toast.LENGTH_LONG).show()
                 }
@@ -95,7 +104,12 @@ class LoginActivity : AppCompatActivity() {
             authInstance
                 .signInWithEmailAndPassword(emailText, passwordText)
                 .addOnSuccessListener {
-                    startActivity(Intent(this, TasksActivity::class.java))
+                    val tasksIntent = Intent(this, TasksActivity::class.java)
+                    with (sharedPref.edit()) {
+                        putBoolean(LOGGED_WITH_EMAIL_PREFERENCE, true)
+                        apply()
+                    }
+                    startActivity(tasksIntent)
                     Toast.makeText(
                         this,
                         "Usuário $emailText autenticado com sucesso!",

@@ -1,9 +1,8 @@
 package br.scl.ifsp.sharedlist.view
 
+import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
@@ -12,7 +11,6 @@ import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import br.scl.ifsp.sharedlist.R
 import br.scl.ifsp.sharedlist.adapter.TaskAdapter
@@ -20,11 +18,10 @@ import br.scl.ifsp.sharedlist.adapter.TaskAdapter
 import br.scl.ifsp.sharedlist.databinding.ActivityTasksBinding
 import br.scl.ifsp.sharedlist.model.Task
 import br.scl.ifsp.sharedlist.model.TaskRealtimeDatabase
+import br.scl.ifsp.sharedlist.view.LoginActivity.Companion.LOGGED_WITH_EMAIL_PREFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import java.time.LocalDate
-import java.util.Date
 
 class TasksActivity : AppCompatActivity() {
     private val activityTaskBinding: ActivityTasksBinding by lazy {
@@ -67,7 +64,7 @@ class TasksActivity : AppCompatActivity() {
         activityTaskBinding.listViewTasks.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, p3 ->
                 val intentUpdate = Intent(this, TaskUpdateActivity::class.java)
-                intentUpdate.putExtra("TASK", tasks[position])
+                intentUpdate.putExtra(TaskUpdateActivity.TASK_EXTRA, tasks[position])
                 activityResultLauncher.launch(intentUpdate)
             }
 
@@ -86,8 +83,10 @@ class TasksActivity : AppCompatActivity() {
                 true
             }
             R.id.exit -> {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                loginIntent.putExtra(LoginActivity.EMAIL_EXTRA, auth.currentUser?.email)
                 auth.signOut()
-                startActivity(Intent(this, LoginActivity::class.java))
+                startActivity(loginIntent)
                 finish()
                 true
             }
@@ -111,7 +110,7 @@ class TasksActivity : AppCompatActivity() {
         val position = (item.menuInfo as AdapterView.AdapterContextMenuInfo).position
         if (item.itemId == 1) {
             val intentUpdate = Intent(this, TaskUpdateActivity::class.java)
-            intentUpdate.putExtra("TASK", tasks[position])
+            intentUpdate.putExtra(TaskUpdateActivity.TASK_EXTRA, tasks[position])
             activityResultLauncher.launch(intentUpdate)
         }
         if (item.itemId == 2) {

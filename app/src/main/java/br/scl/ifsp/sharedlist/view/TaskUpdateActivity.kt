@@ -20,6 +20,10 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 class TaskUpdateActivity : AppCompatActivity() {
+    companion object {
+        val TASK_EXTRA = "TASK_EXTRA"
+    }
+
     private val activityTaskUpdateActivity: ActivityTaskUpdateBinding by lazy {
         ActivityTaskUpdateBinding.inflate(
             layoutInflater
@@ -39,7 +43,7 @@ class TaskUpdateActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
-        val task = wrappedGetParcelable<Task>("TASK")
+        val task = wrappedGetParcelable<Task>(TASK_EXTRA)
 
         task.let {
             activityTaskUpdateActivity.editTextTaskTitle.setText(it?.title)
