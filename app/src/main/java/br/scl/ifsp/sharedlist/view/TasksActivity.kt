@@ -67,8 +67,6 @@ class TasksActivity : AppCompatActivity() {
                 intentUpdate.putExtra(TaskUpdateActivity.TASK_EXTRA, tasks[position])
                 activityResultLauncher.launch(intentUpdate)
             }
-
-        //updateTasks(tasks)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -1,13 +1,8 @@
 package br.scl.ifsp.sharedlist.view
 
 import android.app.DatePickerDialog
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.ContextMenu
 import android.view.MenuItem
-import android.view.View
-import android.widget.CalendarView
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity

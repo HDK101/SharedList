@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,8 +58,6 @@ class LoginActivity : AppCompatActivity() {
 
         val logoutEmail = intent.getStringExtra(EMAIL_EXTRA) ?: ""
 
-        Log.d("LOGGED", sharedPref.getBoolean(LOGGED_WITH_EMAIL_PREFERENCE, false).toString())
-
         if (sharedPref.getBoolean(LOGGED_WITH_EMAIL_PREFERENCE, false)) {
             editTextEmail.setText(logoutEmail)
             with (sharedPref.edit()) {
@@ -71,7 +68,6 @@ class LoginActivity : AppCompatActivity() {
 
         googleActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
             if (result.resultCode == RESULT_OK){
-                //Pegando retorno do login com conta google
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 val googleSignInAccount: GoogleSignInAccount = task.result
                 val credential = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)

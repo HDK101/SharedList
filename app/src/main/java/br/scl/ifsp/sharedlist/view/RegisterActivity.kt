@@ -38,7 +38,6 @@ class RegisterActivity: AppCompatActivity() {
                         ).show()
                     }
             } else {
-                //Senhas não batem
                 Toast.makeText(
                     this@RegisterActivity,
                     "Senhas não coincidem!",

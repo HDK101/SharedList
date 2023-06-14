@@ -1,13 +1,14 @@
 {
   "project_info": {
     "project_number": "988685342491",
+    "firebase_url": "https://sharedlist-3cc5f-default-rtdb.firebaseio.com",
     "project_id": "sharedlist-3cc5f",
     "storage_bucket": "sharedlist-3cc5f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:988685342491:android:95b4db8b419f2e37db65be",
+        "mobilesdk_app_id": "1:988685342491:android:3dfd22fd5591ed80db65be",
         "android_client_info": {
           "package_name": "br.scl.ifsp.sharedlist"
         }
@@ -22,7 +23,7 @@
           }
         },
         {
-          "client_id": "988685342491-qd5aapan693mqjr03kgpkortjp0ne0ol.apps.googleusercontent.com",
+          "client_id": "988685342491-8v34cgakj7bl31i2s8avq6ncn4q6invr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "988685342491-qd5aapan693mqjr03kgpkortjp0ne0ol.apps.googleusercontent.com",
+              "client_id": "988685342491-8v34cgakj7bl31i2s8avq6ncn4q6invr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
