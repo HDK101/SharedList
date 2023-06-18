@@ -42,13 +42,17 @@ class TaskRealtimeDatabase {
     }
 
     fun create(task: Task, callback: () -> Unit) {
-        taskRtDbFbReference.push().setValue(task).addOnSuccessListener {
-            callback()
+        val foundTask = tasks.find { it.title == task.title }
+
+        if (foundTask == null) {
+            taskRtDbFbReference.child(task.title).setValue(task).addOnSuccessListener {
+                callback()
+            }
         }
     }
 
     fun update(task: Task, callback: () -> Unit) {
-        task.id?.let {
+        task.title.let {
             taskRtDbFbReference.child(it).setValue(task).addOnSuccessListener {
                 callback()
             }
@@ -56,7 +60,7 @@ class TaskRealtimeDatabase {
     }
 
     fun delete(task: Task, callback: () -> Unit) {
-        task.id?.let { taskRtDbFbReference.child(it).setValue(null).addOnSuccessListener {
+        task.title.let { taskRtDbFbReference.child(it).setValue(null).addOnSuccessListener {
             callback()
         } }
     }
